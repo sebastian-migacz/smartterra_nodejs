@@ -1,0 +1,144 @@
+<!DOCTYPE HTML><html>
+<head>
+	<title>Smart Terra</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<script src="https://code.highcharts.com/highcharts.js"></script>
+	<link rel="icon" href="data:,">
+	<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+	<h1>Smart Terra Control</h1>
+	<div id="state-and-buttons" class="container">
+	
+	<p>	
+		Grow Light<strong> %STATEGL%</strong>
+	    <a href="/growlight"><button class="button">%STATEGL%</button></a>
+	</p>
+	<p>
+		Waterfall<strong> %STATEWF%</strong>
+		<a href="/waterfall"><button class="button">%STATEWF%</button></a>
+	</p>
+	<p>
+		Sprinkler<strong> %STATESP%</strong>
+		<a href="/sprinkler"><button class="button">%STATESP%</button></a>
+	</p>
+  
+	</div>
+  <p>
+    <span class="sensor-labels">Sensor 1 Temperature</span>
+    <span id="temperature1">%TEMPERATURE1%</span>
+    <sup class="units">&deg;C</sup>
+  </p>
+  <p>
+    <span class="sensor-labels">Sensor 2 Temperature</span>
+    <span id="temperature2">%TEMPERATURE2%</span>
+    <sup class="units">&deg;C</sup>
+  </p>
+  <div id="chart-temperature1" class="container"></div>
+  <div id="chart-temperature2" class="container"></div>
+</body>
+<script>
+var chartT1 = new Highcharts.Chart({
+  chart:{ renderTo : 'chart-temperature1' },
+  title: { text: 'Sensor 1 temp:' },
+  series: [{
+    showInLegend: false,
+    data: []
+  }],
+  plotOptions: {
+    line: { animation: false,
+      dataLabels: { enabled: true }
+    },
+    series: { color: '#059e8a' }
+  },
+  xAxis: { type: 'datetime',
+    dateTimeLabelFormats: { second: '%H:%M:%S' }
+  },
+  yAxis: {
+    title: { text: 'Temperature (Celsius)' }
+    //title: { text: 'Temperature (Fahrenheit)' }
+  },
+  credits: { enabled: false }
+});
+setInterval(function ( ) {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      var x = (new Date()).getTime(),
+          y = parseFloat(this.responseText);
+      //console.log(this.responseText);
+      if(chartT1.series[0].data.length > 40) {
+        chartT1.series[0].addPoint([x, y], true, true, true);
+      } else {
+        chartT1.series[0].addPoint([x, y], true, false, true);
+      }
+    }
+  };
+  xhttp.open("GET", "/temperature1", true);
+  xhttp.send();
+}, 300000 ) ;
+
+var chartT2 = new Highcharts.Chart({
+  chart:{ renderTo : 'chart-temperature2' },
+  title: { text: 'Sensor 2 temp:' },
+  series: [{
+    showInLegend: false,
+    data: []
+  }],
+  plotOptions: {
+    line: { animation: false,
+      dataLabels: { enabled: true }
+    },
+    series: { color: '#059e8a' }
+  },
+  xAxis: { type: 'datetime',
+    dateTimeLabelFormats: { second: '%H:%M:%S' }
+  },
+  yAxis: {
+    title: { text: 'Temperature (Celsius)' }
+    //title: { text: 'Temperature (Fahrenheit)' }
+  },
+  credits: { enabled: false }
+});
+setInterval(function ( ) {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      var x = (new Date()).getTime(),
+          y = parseFloat(this.responseText);
+      //console.log(this.responseText);
+      if(chartT2.series[0].data.length > 40) {
+        chartT2.series[0].addPoint([x, y], true, true, true);
+      } else {
+        chartT2.series[0].addPoint([x, y], true, false, true);
+      }
+    }
+  };
+  xhttp.open("GET", "/temperature2", true);
+  xhttp.send();
+}, 300000 ) ;
+
+  setInterval(function ( ) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("temperature1").innerHTML = this.responseText;
+      }
+    };
+    xhttp.open("GET", "/temperature1", true);
+    xhttp.send();
+  }, 10000 ) ;
+  
+    setInterval(function ( ) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("temperature2").innerHTML = this.responseText;
+      }
+    };
+    xhttp.open("GET", "/temperature2", true);
+    xhttp.send();
+  }, 10000 ) ;
+
+</script>
+</html>
